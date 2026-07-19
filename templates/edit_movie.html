@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}
+Edit Movie
+{% endblock %}
+
+{% block content %}
+
+<h1>Edit Movie</h1>
+
+<div class="form-container">
+
+<form>
+
+<div class="form-group">
+
+<label>Movie Title</label>
+
+<input type="text"
+       value="{{ movie.title }}">
+
+</div>
+
+<div class="form-group">
+
+<label>Genres</label>
+
+<input type="text"
+       value="{{ movie.genres }}">
+
+</div>
+
+<div class="form-group">
+
+<label>Release Date</label>
+
+<input type="date"
+       value="{{ movie.release_date }}">
+
+</div>
+
+<div class="form-group">
+
+<label>Rating</label>
+
+<input type="number"
+       step="0.1"
+       value="{{ movie.vote_average }}">
+
+</div>
+
+<div class="form-group">
+
+<label>Overview</label>
+
+<textarea rows="6">{{ movie.overview }}</textarea>
+
+</div>
+
+<button class="btn">
+
+Update Movie
+
+</button>
+
+</form>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}
+Dashboard
+{% endblock %}
+
+{% block content %}
+
+<h1>Welcome, {{ session["username"] }} 👋</h1>
+
+<div class="details-container">
+
+    <h2 style="text-align:center; margin-bottom:20px;">
+        Movie Recommendation System
+    </h2>
+
+    <hr>
+
+    <p>
+        <strong>Username:</strong>
+        {{ session["username"] }}
+    </p>
+
+    <p>
+        You have successfully logged in.
+    </p>
+
+    <br>
+
+    <div style="text-align:center;">
+
+        <a href="/" class="btn">
+            🏠 Home
+        </a>
+
+        {% if session["role"] == "admin" %}
+<a href="/admin" class="btn">
+    ⚙️ Admin Panel
+</a>
+{% endif %}
+
+        <a href="/logout" class="delete-btn">
+            🚪 Logout
+        </a>
+
+    </div>
+
+</div>
+
+{% endblock %}

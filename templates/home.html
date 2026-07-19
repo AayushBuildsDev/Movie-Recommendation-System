@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block title %}
+Home
+{% endblock %}
+
+{% block content %}
+
+<h1>Latest Movies</h1>
+
+<form action="/" method="GET" class="search-form">
+
+    <input
+        type="text"
+        name="search"
+        placeholder="Search movie..."
+        value="{{ request.args.get('search','') }}"
+    >
+
+    <button class="btn">
+        Search
+    </button>
+
+</form>
+
+
+<div class="genre-container">
+
+    <a href="/" class="genre-btn">All Movies</a>
+
+    <a href="/genre/Action" class="genre-btn">Action</a>
+
+    <a href="/genre/Adventure" class="genre-btn">Adventure</a>
+
+    <a href="/genre/Animation" class="genre-btn">Animation</a>
+
+    <a href="/genre/Comedy" class="genre-btn">Comedy</a>
+
+    <a href="/genre/Crime" class="genre-btn">Crime</a>
+
+    <a href="/genre/Drama" class="genre-btn">Drama</a>
+
+    <a href="/genre/Family" class="genre-btn">Family</a>
+
+    <a href="/genre/Fantasy" class="genre-btn">Fantasy</a>
+
+    <a href="/genre/Horror" class="genre-btn">Horror</a>
+
+    <a href="/genre/Romance" class="genre-btn">Romance</a>
+
+    <a href="/genre/Science Fiction" class="genre-btn">Sci-Fi</a>
+
+    <a href="/genre/Thriller" class="genre-btn">Thriller</a>
+
+</div>
+
+
+<div class="movie-container">
+
+    {% for movie in movies %}
+
+    <div class="movie-card">
+
+      {% if movie.poster %}
+    <img src="{{ movie.poster }}"
+         alt="{{ movie.title }}"
+         class="movie-poster">
+{% else %}
+    <img src="{{ url_for('static', filename='images/no-poster.jpg') }}"
+         alt="No Poster Available"
+         class="movie-poster">
+{% endif %}
+        <h2>{{ movie.title }}</h2>
+
+        <p>
+            <strong>Release Date:</strong>
+            {{ movie.release_date }}
+        </p>
+
+        <p>
+            <strong>Rating:</strong>
+            ⭐ {{ movie.vote_average }}
+        </p>
+
+        <p>
+            {{ movie.overview[:150] }}...
+        </p>
+
+        <a href="/movie/{{ movie.id }}" class="btn">
+            View Details
+        </a>
+
+    </div>
+
+    {% endfor %}
+
+</div>
+{% endblock %}
