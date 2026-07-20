@@ -3,11 +3,16 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from database import get_connection
 import json
 import requests
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
+TMDB_API_KEY = os.getenv("TMDB_API_KEY")
 
 app = Flask(__name__)
 
 app.secret_key = "movie_recommendation_secret_key"
-TMDB_API_KEY = "dd2e4579550b341158b2ee75ee32c5a9"
 
 import requests
 
