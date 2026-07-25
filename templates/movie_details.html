@@ -14,7 +14,7 @@
          alt="{{ movie.title }}"
          class="movie-poster">
 {% else %}
-    <img src="{{ url_for('static', filename='images/no-poster.png') }}"
+    <img src="{{ url_for('static', filename='images/no-poster.jpg') }}"
          alt="No Poster Available"
          class="movie-poster">
 {% endif %}
@@ -149,7 +149,7 @@
                  alt="{{ rec.title }}"
                  class="movie-poster">
         {% else %}
-            <img src="{{ url_for('static', filename='images/no-poster.png') }}"
+            <img src="{{ url_for('static', filename='images/no-poster.jpg') }}"
                  alt="No Poster Available"
                  class="movie-poster">
         {% endif %}
