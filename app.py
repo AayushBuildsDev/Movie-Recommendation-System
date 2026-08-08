@@ -5,6 +5,7 @@ import json
 import requests
 from dotenv import load_dotenv
 import os
+from functools import lru_cache
 
 load_dotenv()
 
@@ -57,8 +58,9 @@ def home():
         SELECT id, title, release_date, vote_average, overview
         FROM tmdb_5000_movies
         WHERE title LIKE %s
-        ORDER BY title;
-        """
+       ORDER BY title
+     LIMIT 12;
+"""
 
         cursor.execute(query, ("%" + search + "%",))
 
@@ -95,7 +97,8 @@ def genre_movies(genre_name):
     SELECT id, title, release_date, vote_average, overview
     FROM tmdb_5000_movies
     WHERE genres LIKE %s
-    ORDER BY title;
+    ORDER BY title
+    LIMIT 12;
     """
 
     cursor.execute(query, ("%" + genre_name + "%",))
@@ -112,93 +115,34 @@ def genre_movies(genre_name):
 
 
 # -------------------- Movie Details -------------------- #
-@app.route("/movie/<int:movie_id>")
-def movie_details(movie_id):
+@lru_cache(maxsize=500)
+def get_movie_poster(movie_id):
 
-    conn = get_connection()
-    cursor = conn.cursor(dictionary=True)
+    url = f"https://api.themoviedb.org/3/movie/{movie_id}"
 
-    query = """
-    SELECT
-        id,
-        title,
-        genres,
-        overview,
-        release_date,
-        vote_average,
-        vote_count,
-        popularity,
-        tagline,
-        homepage
-    FROM tmdb_5000_movies
-    WHERE id=%s;
-    """
+    params = {
+        "api_key": TMDB_API_KEY
+    }
 
-    cursor.execute(query, (movie_id,))
-
-    movie = cursor.fetchone()
-
-    if movie:
-
-        # Get movie poster
-        movie["poster"] = get_movie_poster(movie["id"])
-
-        # Convert genres JSON to text
-        genres = json.loads(movie["genres"])
-        movie["genres"] = ", ".join(
-            genre["name"] for genre in genres
+    try:
+        response = requests.get(
+            url,
+            params=params,
+            timeout=5
         )
 
-        # First genre for recommendations
-        first_genre = genres[0]["name"]
+        if response.status_code == 200:
+            data = response.json()
 
-        query = """
-        SELECT
-            id,
-            title,
-            vote_average
-        FROM tmdb_5000_movies
-        WHERE genres LIKE %s
-        AND id != %s
-        LIMIT 6;
-        """
+            poster_path = data.get("poster_path")
 
-        cursor.execute(
-            query,
-            ("%" + first_genre + "%", movie_id)
-        )
+            if poster_path:
+                return "https://image.tmdb.org/t/p/w500" + poster_path
 
-        recommended_movies = cursor.fetchall()
+    except requests.exceptions.RequestException as e:
+        print("TMDB Error:", e)
 
-        # Add posters to recommended movies
-        for rec in recommended_movies:
-            rec["poster"] = get_movie_poster(rec["id"])
-
-        # Get average user rating
-        cursor.execute("""
-            SELECT ROUND(AVG(rating),1) AS user_rating
-            FROM rating_table
-            WHERE movie_id=%s
-        """, (movie_id,))
-
-        rating = cursor.fetchone()
-
-        if rating:
-            movie["user_rating"] = rating["user_rating"]
-
-    else:
-
-        recommended_movies = []
-
-    cursor.close()
-    conn.close()
-
-    return render_template(
-        "movie_details.html",
-        movie=movie,
-        recommended_movies=recommended_movies
-    )
-
+    return None
 # -------------------- Add Movie -------------------- #
 
 @app.route("/add_movie")
